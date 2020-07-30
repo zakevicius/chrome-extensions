@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+    button {
+      height: 30px;
+      width: 100px;
+      outline: none;
+    }
+
+    .single {
+      width: 500px;
+      border: 1px solid black;
+      margin: 1em 0;
+    }
+  </style>
+</head>
+<body>
+  <form method="GET" id="ex-form" name="ex-form">
+    <label for="ex-mrn">Export MRN:</label>
+    <textarea type="text" name="ex-mrn" id="ex-mrn" autocomplete="off"></textarea>
+    <button type="submit">Submit</button>
+  </form>
+  <form method="GET" id="tr-form" name="tr-form">
+    <label for="tr-mrn">Transit MRN:</label>
+    <textarea type="text" name="tr-mrn" id="tr-mrn" autocomplete="off"></textarea>
+    <button type="submit">Submit</button>
+  </form>
+  <div id="response"></div>
+  <script src="popup.js"></script>
+</body>
+</html>

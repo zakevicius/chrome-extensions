@@ -1,0 +1,17 @@
+{
+  "name": "MRN",
+  "version": "1.0",
+  "description": "Export and Transit MRN Follow-up (international movements only)",
+  "permissions": ["activeTab", "declarativeContent", "storage"],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "page_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "32": "images/mrn.png"
+    }
+  },
+  "manifest_version": 2
+}
