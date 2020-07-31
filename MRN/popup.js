@@ -1,51 +1,73 @@
 const exForm = document.getElementById('ex-form');
 const trForm = document.getElementById('tr-form');
+const response = document.getElementById('response');
+const progress = document.getElementById('progress');
 const lists = {
   ex: 'ecs/ecs',
   tr: 'tra/transit'
-}
+};
+let totalMRN;
+let currentMRNCount;
 
 exForm.onsubmit = function(e) {
   e.preventDefault();
-  const mrn = document.getElementById("ex-mrn").value;
-  submitForm(mrn, 'ex');
+  const value = document.getElementById("ex-mrn").value;
+  submitForm(value, 'ex');
 }
 
 trForm.onsubmit = function(e) {
   e.preventDefault();
-  const mrn = document.getElementById("tr-mrn").value;
-  submitForm(mrn, 'tr');
+  const value = document.getElementById("tr-mrn").value;
+  submitForm(value, 'tr');
 }
 
-function submitForm(mrn, type) {
-  document.getElementById('response').innerText = 'Loading data...';
+function submitForm(mrnString, type) {
+  response.innerHTML = "";
 
-  if (!mrn) {
-    document.getElementById('response').innerText = 'No value submitted';
+  if (!mrnString) {
+    response.innerText = 'No value submitted';
     return;
   }
 
-  const mrnList = mrn.split('\n');
+  const mrnList = mrnString.split('\n').filter(function(mrn) {
+    return mrn !== "";
+  });
+  
+  currentMRNCount = 0;
+  totalMRN = mrnList.length;
 
-  for (let m of mrnList) {
-    if (!m) continue;
+  updateTotal(totalMRN, currentMRNCount);
 
-    let query = "https://cors-anywhere.herokuapp.com/https://ec.europa.eu/taxation_customs/dds2/" + lists[type] + "_list.jsp?Lang=en&MRN=" + m;
+  for (let mrn of mrnList) {
+    if (!mrn) continue;
+
+    let query = "https://cors-anywhere.herokuapp.com/https://ec.europa.eu/taxation_customs/dds2/" + lists[type] + "_list.jsp?Lang=en&MRN=" + mrn;
 
     fetch(query)
     .then(function(res) {
       return res.text();
     })
     .then(function(text) {
+      text.replace(/\s/g, " ");
+      console.log(text)
+      console.log(text.slice(text.indexOf('<table>'), text.indexOf("</table>")));
+      updateTotal(totalMRN, ++currentMRNCount);
+
       let div = document.createElement("DIV");
-      let h2 = document.createElement('H2');
-      let p = document.createElement('P');
+      let h2 = currentMRNCount + '. MRN: ' + mrn;
+
       div.classList.add('single');
-      p.innerHTML = text;
-      div.appendChild(p);
-      h2.innerText = 'MRN: ' + m;
-      div.appendChild(h2);
-      document.getElementById('response').appendChild(div);
+      div.insertAdjacentHTML("afterbegin", "<h2>" + h2 + "</h2>");
+      div.insertAdjacentHTML("beforeend", "<p>" + text + "</p>");
+      response.appendChild(div);
     });
+  }
+}
+
+function updateTotal(total, current) {
+  if (total !== current) {
+    progress.innerText = 'Loaded ' + current + " of " + total;
+  } else {
+    progress.innerText = 'Finished. Total: ' + total;
   }
 }
