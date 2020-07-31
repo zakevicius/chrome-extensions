@@ -7,14 +7,15 @@
   <form method="GET" id="ex-form" name="ex-form">
     <label for="ex-mrn">Export MRN:</label>
     <textarea rows=5 type="text" name="ex-mrn" id="ex-mrn" autocomplete="off"></textarea>
-    <button type="submit">Submit</button>
+    <button type="submit" class="btn-submit">Submit</button>
   </form>
   <form method="GET" id="tr-form" name="tr-form">
     <label for="tr-mrn">Transit MRN:</label>
     <textarea rows=5 type="text" name="tr-mrn" id="tr-mrn" autocomplete="off"></textarea>
-    <button type="submit">Submit</button>
+    <button type="submit" class="btn-submit">Submit</button>
   </form>
   <div id="progress"></div>
+  <div id="error"></div>
   <div id="response"></div>
   <script src="popup.js"></script>
 </body>

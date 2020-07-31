@@ -1,11 +1,13 @@
 const exForm = document.getElementById('ex-form');
 const trForm = document.getElementById('tr-form');
 const response = document.getElementById('response');
-const progress = document.getElementById('progress');
+const error = document.getElementById('error');
+const buttons = document.querySelectorAll('button');
 const lists = {
   ex: 'ecs/ecs',
   tr: 'tra/transit'
 };
+const INTERVAL = 300;
 let totalMRN;
 let currentMRNCount;
 
@@ -22,14 +24,14 @@ trForm.onsubmit = function(e) {
 }
 
 function submitForm(mrnString, type) {
-  response.innerHTML = "";
+  clearFields();
 
   if (!mrnString) {
-    response.innerText = 'No value submitted';
+    showError('No value submitted');
     return;
   }
 
-  const mrnList = mrnString.split('\n').filter(function(mrn) {
+  let mrnList = mrnString.split('\n').filter(function(mrn) {
     return mrn !== "";
   });
   
@@ -38,30 +40,13 @@ function submitForm(mrnString, type) {
 
   updateTotal(totalMRN, currentMRNCount);
 
-  for (let mrn of mrnList) {
-    if (!mrn) continue;
+  for (let i = 0; i < mrnList.length; i++) {
+    if (!mrnList[i]) continue;
 
-    let query = "https://cors-anywhere.herokuapp.com/https://ec.europa.eu/taxation_customs/dds2/" + lists[type] + "_list.jsp?Lang=en&MRN=" + mrn;
-
-    fetch(query)
-    .then(function(res) {
-      return res.text();
-    })
-    .then(function(text) {
-      text.replace(/\s/g, " ");
-      console.log(text)
-      console.log(text.slice(text.indexOf('<table>'), text.indexOf("</table>")));
-      updateTotal(totalMRN, ++currentMRNCount);
-
-      let div = document.createElement("DIV");
-      let h2 = currentMRNCount + '. MRN: ' + mrn;
-
-      div.classList.add('single');
-      div.insertAdjacentHTML("afterbegin", "<h2>" + h2 + "</h2>");
-      div.insertAdjacentHTML("beforeend", "<p>" + text + "</p>");
-      response.appendChild(div);
-    });
-  }
+    setTimeout(function() {
+      fetchData(mrnList[i], type);
+    }, i * INTERVAL);
+  } 
 }
 
 function updateTotal(total, current) {
@@ -69,5 +54,73 @@ function updateTotal(total, current) {
     progress.innerText = 'Loaded ' + current + " of " + total;
   } else {
     progress.innerText = 'Finished. Total: ' + total;
+    buttons.forEach(function(btn) {
+      btn.disabled = false;
+    });
   }
+}
+
+function trimResult(str) {
+  let trimmed = str.replace(/\s+/g, " ");
+
+  let i = trimmed.indexOf("<form");
+
+  if (i > -1) { 
+    let end;
+    while (end !== ">") {
+      end = trimmed[i];
+      i++;
+    }
+  }
+  return trimmed.slice(i, trimmed.indexOf("</form"));
+}
+
+function createResults(mrn, result) {
+  let div = document.createElement("DIV");
+  div.classList.add('single');
+  div.insertAdjacentHTML("afterbegin", "<h2>" + mrn + "</h2>");
+  div.insertAdjacentHTML("beforeend", result);
+  response.appendChild(div);
+}
+
+function clearFields() {
+  buttons.forEach(function(btn) {
+    btn.disabled = true;
+  });
+  response.classList.remove("error");
+  progress.classList.remove("error");
+  response.innerHTML = "";
+  error.innerHTML = "";
+}
+
+function showError(msg) {  
+  buttons.forEach(function(btn) {
+    btn.disabled = false;
+  });
+  response.classList.add("error");
+  progress.classList.add("error");
+  response.innerText = msg;
+  progress.innerText = "Error!"
+}
+
+function fetchData(mrn, type) {
+  let query = "https://cors-anywhere.herokuapp.com/https://ec.europa.eu/taxation_customs/dds2/" + lists[type] + "_list.jsp?Lang=en&MRN=" + mrn;
+
+  fetch(query)
+  .then(function(res) {
+    if (res.status !== 200) {
+      throw new Error("Status: " + res.status + ". " + res.statusText);
+    }
+    return res.text();
+  })
+  .then(function(text) {
+    let result = trimResult(text);
+    updateTotal(totalMRN, ++currentMRNCount);
+
+    let h2 = currentMRNCount + '. MRN: ' + mrn;
+    createResults(h2, result);
+  })
+  .catch(function(err) {
+    showError(err.message);
+  });
 }
