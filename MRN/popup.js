@@ -2,6 +2,8 @@ const exForm = document.getElementById('ex-form');
 const trForm = document.getElementById('tr-form');
 const response = document.getElementById('response');
 const error = document.getElementById('error');
+const progress = document.getElementById('progress-text');
+const progressBar = document.getElementById('progress-bar');
 const buttons = document.querySelectorAll('button');
 const lists = {
   ex: 'ecs/ecs',
@@ -54,10 +56,14 @@ function updateTotal(total, current) {
     progress.innerText = 'Loaded ' + current + " of " + total;
   } else {
     progress.innerText = 'Finished. Total: ' + total;
+    progress.classList.add('success');
+    progressBar.style.backgroundColor = "#4b4";
     buttons.forEach(function(btn) {
       btn.disabled = false;
     });
   }
+  progressBar.style.display = "block";
+  progressBar.style.width = (current / total * 100) + "%";
 }
 
 function trimResult(str) {
@@ -89,6 +95,8 @@ function clearFields() {
   });
   response.classList.remove("error");
   progress.classList.remove("error");
+  progress.classList.remove('success');
+  progressBar.style.backgroundColor = "#66b";
   response.innerHTML = "";
   error.innerHTML = "";
 }

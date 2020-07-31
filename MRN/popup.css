@@ -1,16 +1,36 @@
+* {
+  box-sizing: border-box;
+  color: #444;
+}
+
+*:focus {
+  outline: none;
+}
+
 body {
   min-width: 500px;
 }
 
+h2 {
+  font-size: 11pt;
+  font-weight: normal;
+}
+
 button {
+  margin-top: 0.5em;
   height: 30px;
   width: 100%;
   background-color: #eee;
+  border-radius: 5px;
   border: none;
   text-align: center;
   text-decoration: none;
   font-size: 16px;
   cursor: pointer;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
 }
 
 form {
@@ -21,6 +41,9 @@ form {
 label {
   display: block;
   width: 100%;
+  padding: 0.5em 0;
+  font-size: 10pt;
+  font-weight: bold;
 }
 
 textarea {
@@ -28,21 +51,58 @@ textarea {
   width: 100%;
 }
 
-.single {
+#response {
   width: 100%;
-  min-height: 200px;
-  border: 1px solid black;
+  padding: 1em;
+}
+
+.single {
+  padding: 1em;
+  width: 100%;
+  max-height: 200px;
   margin: 1em 0;
 }
 
 #progress {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: fixed;
-  top: 20px;
-  right: 20px;
+  top: 3.1em;
+  right: 1em;
+  width: 150px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.8);
+  font-size: 10pt;
+}
+
+#progress-bar {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left:0;
+  height: 10px;
+  margin: 2px 0;
+  width: 0%;
+  background-color: #eee;
+}
+
+textarea, #progress, .single, #progress-bar {
+  border: 1px solid #eee;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  box-shadow: 0px 0px 5px #eee;
 }
 
 .error {
   color: tomato;
+}
+
+.success {
+  color: #4b4;
 }
 
 #search_info a {
