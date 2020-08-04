@@ -2,7 +2,7 @@
   "name": "MRN",
   "version": "1.0",
   "description": "Export and Transit MRN Follow-up (international movements only)",
-  "permissions": ["activeTab", "declarativeContent", "storage"],
+  "permissions": ["declarativeContent"],
   "background": {
     "scripts": ["background.js"],
     "persistent": false
